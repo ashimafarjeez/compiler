@@ -1,3 +1,5 @@
+from semantic import SemanticAnalyzer
+
 class AST:
     pass
 
@@ -19,6 +21,10 @@ class Assign(AST):
     def __init__(self, left, right):
         self.target=left
         self.value=right
+
+class Program(AST):
+    def __init__(self,statements):
+        self.statements=statements
 
 class Parser:
     def __init__(self, tokens):
@@ -96,20 +102,29 @@ class Parser:
         node=self.assign()
         return node
 
+    def prgrm(self):
+        statements=[]
+        while self.current_token() is not None:
+            statements.append(self.stat())
+        return Program(statements)
 
 
-# tokens=[
-#     ('ID','x'),
-#     ('ASSIGN','='),
-#     ('NUMBER','2'),
-#     ('PLUS','+'),
-#     ('NUMBER','3'),
-#     ('SEMI',';')
-# ]
-# parser=Parser(tokens)
-# node=parser.stat()
-# print(node.target.name)
-# print('=')
-# print(node.value.left.value)
-# print(node.value.op[1])
-# print(node.value.right.value)
+tokens=[
+    ('ID','x'),
+    ('ASSIGN','='),
+    ('NUMBER','2'),
+    ('SEMI',';'),
+    ('ID','y'),
+    ('ASSIGN', '='),
+    ('ID','x'),
+    ('PLUS','+'),
+    ('NUMBER','4'),
+    ('SEMI',';')
+]
+parser=Parser(tokens)
+ast=parser.prgrm()
+analyzer=SemanticAnalyzer()
+analyzer.visit(ast)
+print('Semantic analysis done')
+
+
